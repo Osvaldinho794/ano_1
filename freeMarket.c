@@ -772,6 +772,57 @@ int fazerLogin() {
     
     return indiceUsuario;
 }
+void listaProdutosPorID() {
+    // Abre o arquivo de produtos para leitura
+    FILE *arquivoProdutos = fopen(ARQUIVO_PRODUTOS, "rb");
+    if (arquivoProdutos == NULL) {
+        printf("Erro na abertura do arquivo de produtos\n");
+        return;
+    }
+
+    produto_t *produtos;
+    int nProdutos;
+    
+    // Lê o número de produtos
+    fread(&nProdutos, sizeof(int), 1, arquivoProdutos);
+    produtos = malloc(sizeof(produto_t) * nProdutos);
+    if (nProdutos > 0) {
+        fread(produtos, sizeof(produto_t), nProdutos, arquivoProdutos);
+    }
+    fclose(arquivoProdutos);
+
+    // Solicita o ID do vendedor ao usuário
+    char idVendedor[USUARIO_CARACTERES_ID];
+    printf("Digite o ID do vendedor para listar os produtos:\n");
+    printf(" : ");
+    fgets(idVendedor, USUARIO_CARACTERES_ID, stdin);
+    removeQuebra(idVendedor);
+
+    //Mostra todos os produtos
+    printf("Produtos do vendedor com ID %s:\n", idVendedor);
+    for (int i = 0; i < nProdutos; i++) {
+        if (strcmp(produtos[i].idVendedor, idVendedor) == 0) {
+            printf("Produto: %s\n", produtos[i].nome);
+                
+    
+        }
+    }
+    
+    int opcao;
+    printf("1 - Ver detalhes de um produto\n0 - Sair\n");
+    scanf("%d%*c", &opcao);
+
+    // Se o usuário quiser ver detalhes, solicita o número do produto
+    if (opcao == 1) {
+        for (int i = 0; i < nProdutos; i++) {
+            if (strcmp(produtos[i].idVendedor, idVendedor) == 0) {
+                printf("Descrição: %s\n", produtos[i].descricao);
+                printf("Estoque: %d\n", produtos[i].estoque);
+            }
+        }
+    }
+}
+
 
 
     //  MAIN  //
@@ -855,6 +906,11 @@ int main(int argc, char ** argv) {
             
             case 6:
             if(loginAtual != LOGIN_SEM_LOGIN) cadastraAvaliacao(loginAtual);
+            else printf("FACA LOGIN PRIMEIRO\n");
+            break;
+            
+            case 7:
+            if(loginAtual != LOGIN_SEM_LOGIN) listaProdutosPorID();
             else printf("FACA LOGIN PRIMEIRO\n");
             break;
 
